@@ -1,0 +1,11 @@
+{
+    "deno.enable": true,
+    "deno.lint": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "typescript.format.semicolons": "remove"
+}
