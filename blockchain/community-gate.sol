@@ -24,39 +24,36 @@ contract CommunityGate {
 
   mapping(uint256 => IAsset) public assets;
   struct IAsset{
-    address contractAddress;
     uint256 assetID;
     uint256 upVoteScore;
     uint256 downVoteScore;
-    uint256 reconciliationAt;
+    uint256 reconciliationFrom;
     bool reconciled;
   }
   mapping(uint256 => IVote) public votes;
   struct IVote {
+    address payable from;
     uint256 amount;
     bool up;
-  }
-  mapping(uint256 => uint256) public voteToAsset;
-  mapping(uint256 => IReward) public rewards;
-  struct IReward {
-    uint256 voteID;
-    uint256 amount;
+    uint256 rewardAmount;
     bool claimed;
   }
+  mapping(uint256 => uint256) public voteToAsset;
 
   error BuyPriceMightHaveRisen(); 
   error Patience();
+  error NothingToClaim();
 
-  function registerAsset(address project, uint256 assetID) public{
+  function registerAsset(uint256 assetID) public{
     assetCounter++;
-    IAsset memory asset = IAsset(project, assetID, 0, 0, block.timestamp + 3600, false);
+    IAsset memory asset = IAsset(assetID, 0, 0, block.timestamp + 3600, false);
     assets[assetCounter] = asset;
   }
   function appreciateAsset(uint256 assetID, uint256 appreciationAmountFC, uint256 fCBuyPrice) public payable  {
     voteCounter++;
     invest(appreciationAmountFC, fCBuyPrice);
     assets[assetID].upVoteScore += appreciationAmountFC;
-    IVote memory vote = IVote(appreciationAmountFC, true);
+    IVote memory vote = IVote(payable(msg.sender), appreciationAmountFC, true, 0, false);
     votes[voteCounter] = vote;
     voteToAsset[voteCounter] = assetID;
   }
@@ -64,12 +61,12 @@ contract CommunityGate {
     voteCounter++;    
     invest(depreciationAmountFC, fCBuyPrice);
     assets[assetID].downVoteScore += depreciationAmountFC;
-    IVote memory vote = IVote(depreciationAmountFC, false);    
+    IVote memory vote = IVote(payable(msg.sender), depreciationAmountFC, false, 0, false);
     votes[voteCounter] = vote;
     voteToAsset[voteCounter] = assetID;
   }
   function reconcile(uint256 assetID) public {
-    if (block.timestamp < assets[assetID].reconciliationAt) { revert Patience(); }
+    if (block.timestamp < assets[assetID].reconciliationFrom) { revert Patience(); }
     if (assets[assetID].upVoteScore >= assets[assetID].downVoteScore) {
       uint256 sumOfLosingVotes = getSumOfLosingVotes(assetID, true);
       uint256 numberOfWinningVotes = getNumberOfWinningVotes(assetID, true);
@@ -81,6 +78,20 @@ contract CommunityGate {
       uint256 rewardPerWinner = sumOfLosingVotes / numberOfWinningVotes;      
       assignRewards(false, rewardPerWinner);
     }
+  }
+  function getClaimableRewards(address receiver) public view returns(uint256) {
+    uint256 sum;
+    for (uint256 i = 1; i <= voteCounter; i++) {
+      if (receiver == votes[i].from) {
+        sum += votes[i].rewardAmount;
+      }
+    }
+    return sum;
+  }
+  function claimRewards() public {
+    uint256 amount = getClaimableRewards(msg.sender);
+    if(amount == 0){ revert NothingToClaim(); }
+    IERC20(nativeFreedomCash).transfer(msg.sender, amount);
   }
   function getNumberOfWinningVotes(uint256 assetID, bool up) public view returns (uint256) {
     uint256 counter;
@@ -99,26 +110,26 @@ contract CommunityGate {
     uint256 sum;
     for (uint256 i = 1; i <= voteCounter; i++) {
       if (assetID == voteToAsset[i]) {
-        if((up && votes[i].up) || (!up && !votes[i].up)) {
+        if((up && !votes[i].up) || (!up && votes[i].up)) {
           sum += votes[i].amount;
         }
       } 
     }
     return sum;   
   }
+    function getBTS() public view returns(uint256) {
+    return block.timestamp;
+  }
+
   function assignRewards(bool toUpvoters, uint256 rewardPerWinner) internal {
     for (uint256 i = 1; i <= voteCounter; i++) {
       rewardCounter++;
-      if((votes[voteCounter].up && toUpvoters) || (!votes[voteCounter].up && !toUpvoters)){
-        IReward memory reward = IReward(voteCounter, rewardPerWinner, false);
-        rewards[rewardCounter] = reward;
+      if((votes[i].up && toUpvoters) || (!votes[i].up && !toUpvoters)){
+        votes[i].rewardAmount = rewardPerWinner;
       } 
-
     }
   }
-  function getBTS() public view returns(uint256) {
-    return block.timestamp;
-  }
+
   function invest(uint256 amount, uint256 fCBuyPrice) internal {
     uint256 fCBuyPriceCheck = IFreedomCash(nativeFreedomCash).getBuyPrice(10**18);
     if (fCBuyPriceCheck != fCBuyPrice) { revert BuyPriceMightHaveRisen(); }

@@ -1,1 +1,1 @@
-export * from "./community-gate/gate-keeper-community.ts"
+export * from "./gate-keeper-community.ts"

@@ -1,29 +1,27 @@
-import { ethers, Logger } from "../deps.ts"
+import { ethers, Logger } from "./deps.ts"
 
-export const communityGate = "0x26A477c88219b45ded7a3E92aEb3FA6E4839D83F" 
+export const communityGate = "0xf51Cd1AE2B6d50b4B8dF3EE6E03346122d63a684"
 export const FE = "0xc79E10bcE57e40e1474fbefF8044C906021A05b1"
 export const FC = "0x1E7A208810366D0562c7Ba93F883daEedBf31410"
 export const baseURLScan = "https://zkevm.polygonscan.com/"
 
-export interface ITask {
-    createdBy: string
-    timestamp: number
-    descriptionInMarkdown: string
+export interface IVote {
+    from: string
+    amount: number
+    up: boolean
+    rewardAmount: bigint
+    claimed: boolean
 }
 
-export interface IFunding {
-    from: string
-    amount: bigint
-    assignedAmount: bigint
-    timestamp: number
+export interface IAsset {
+    contractAddress: string
+    assetID: number
+    upVoteScore: number
+    downVoteScore: number
+    reconciliationFrom: number
+    reconciled: boolean
 }
-export interface ISolution {
-    from: string
-    evidence: string
-    score: bigint
-    claimed: bigint
-    timestamp: number
-}
+
 
 export function getProvider(logger: Logger) {
     return new ethers.JsonRpcProvider(getProviderURL(logger))

@@ -6,6 +6,11 @@
 	},
 	{
 		"inputs": [],
+		"name": "NothingToClaim",
+		"type": "error"
+	},
+	{
+		"inputs": [],
 		"name": "Patience",
 		"type": "error"
 	},
@@ -56,11 +61,6 @@
 		"name": "assets",
 		"outputs": [
 			{
-				"internalType": "address",
-				"name": "contractAddress",
-				"type": "address"
-			},
-			{
 				"internalType": "uint256",
 				"name": "assetID",
 				"type": "uint256"
@@ -77,7 +77,7 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "reconciliationAt",
+				"name": "reconciliationFrom",
 				"type": "uint256"
 			},
 			{
@@ -87,6 +87,13 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "claimRewards",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -115,6 +122,25 @@
 	{
 		"inputs": [],
 		"name": "getBTS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			}
+		],
+		"name": "getClaimableRewards",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -215,13 +241,13 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "project",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "assetID",
+				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "assetID",
+				"name": "votingPeriodLength",
 				"type": "uint256"
 			}
 		],
@@ -238,35 +264,6 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "rewards",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "voteID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "claimed",
-				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -315,6 +312,11 @@
 		"name": "votes",
 		"outputs": [
 			{
+				"internalType": "address payable",
+				"name": "from",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
 				"name": "amount",
 				"type": "uint256"
@@ -322,6 +324,16 @@
 			{
 				"internalType": "bool",
 				"name": "up",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "rewardAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "claimed",
 				"type": "bool"
 			}
 		],
