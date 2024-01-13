@@ -67,11 +67,6 @@
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "assetID",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
 				"name": "upVoteScore",
 				"type": "uint256"
 			},
@@ -245,11 +240,6 @@
 	},
 	{
 		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "assetID",
-				"type": "uint256"
-			},
 			{
 				"internalType": "uint256",
 				"name": "votingPeriodMinLength",

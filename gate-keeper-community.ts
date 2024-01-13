@@ -26,8 +26,8 @@ export class GateKeeperCommunity {
         this.contract = contract
         this.fCcontract = fCcontract
     }
-    public async registerAsset(assetID: number, votingPeriodMinLength: number) {
-        await this.awaitTransaction(await this.contract.registerAsset(assetID, votingPeriodMinLength))
+    public async registerAsset(votingPeriodMinLength: number) {
+        await this.awaitTransaction(await this.contract.registerAsset(votingPeriodMinLength))
     }
     public async appreciateAsset(assetID: number, amount: number) {
         const parsedAmount = ethers.parseEther(amount.toString())
@@ -61,11 +61,10 @@ export class GateKeeperCommunity {
         const raw = await this.contract.assets(id)
 
         return {
-            assetID: raw[0],
-            upVoteScore: raw[1],
-            downVoteScore: raw[2],
-            reconciliationFrom: raw[3],
-            reconciled: raw[4]
+            upVoteScore: raw[0],
+            downVoteScore: raw[1],
+            reconciliationFrom: raw[2],
+            reconciled: raw[3]
         }
     }
     public async getVote(id: number) {
@@ -90,9 +89,9 @@ export class GateKeeperCommunity {
         this.logger.debug(`asset counter: ${await this.getAssetCounter()}`)
         this.logger.debug(`vote counter: ${await this.getVoteCounter()}`)
         const asset1 = await this.getAsset(1)
-        this.logger.debug(`asset 1 ${asset1.assetID} ${asset1.upVoteScore} ${asset1.downVoteScore} ${asset1.reconciliationFrom} ${asset1.reconciled}`)
+        this.logger.debug(`asset 1 ${asset1.upVoteScore} ${asset1.downVoteScore} ${asset1.reconciliationFrom} ${asset1.reconciled}`)
         const asset2 = await this.getAsset(2)
-        this.logger.debug(`asset 2 ${asset2.assetID} ${asset2.upVoteScore} ${asset2.downVoteScore} ${asset2.reconciliationFrom} ${asset2.reconciled}`)
+        this.logger.debug(`asset 2 ${asset2.upVoteScore} ${asset2.downVoteScore} ${asset2.reconciliationFrom} ${asset2.reconciled}`)
         const vote1 = await this.getVote(1)
         const vote2 = await this.getVote(2)
         this.logger.debug(`vote 1 ${vote1.from} ${vote1.amount} ${vote1.up} ${vote1.rewardAmount} ${vote1.claimed} `)
@@ -100,7 +99,7 @@ export class GateKeeperCommunity {
         this.logger.debug(`numberOFWinningVotes: ${await this.contract.getNumberOfWinningVotes(1, true)}`)
         this.logger.debug(`sumOfLosingVotes: ${await this.contract.getSumOfLosingVotes(1, true)}`) 
         this.logger.debug(`block timestamp: ${await this.contract.getBTS()}`) 
-        // this.logger.debug(`claimableRewards: ${await this.contract.getClaimableRewards(FC)}`) 
+        this.logger.debug(`claimableRewards: ${await this.contract.getClaimableRewards("0xB257CCE82d58Ed21c70B4B0cac6a6089408E5dbE")}`) 
     }
     private async awaitTransaction(tx: any): Promise<void> {
         this.logger.info(`transaction ${baseURLScan}tx/${tx.hash}`)

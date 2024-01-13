@@ -24,7 +24,6 @@ contract CommunityGate {
 
   mapping(uint256 => IAsset) public assets;
   struct IAsset{
-    uint256 assetID;
     uint256 upVoteScore;
     uint256 downVoteScore;
     uint256 reconciliationFrom;
@@ -45,9 +44,9 @@ contract CommunityGate {
   error ReferenceSeemsUnintended();
   error NothingToClaim();
 
-  function registerAsset(uint256 assetID, uint256 votingPeriodMinLength) public{
+  function registerAsset(uint256 votingPeriodMinLength) public{
     assetCounter++;
-    IAsset memory asset = IAsset(assetID, 0, 0, block.timestamp + votingPeriodMinLength, false);
+    IAsset memory asset = IAsset(0, 0, block.timestamp + votingPeriodMinLength, false);
     assets[assetCounter] = asset;
   }
   function appreciateAsset(uint256 assetID, uint256 appreciationAmountFC, uint256 fCBuyPrice) public payable  {

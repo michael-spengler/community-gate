@@ -32,7 +32,7 @@ export class FreedomOfSpeech {
         const parsedAmount = ethers.parseEther(donationAmountFC.toString())
         const buyPrice = await this.fCcontract.getBuyPrice(BigInt(10 ** 18))
         const cost = buyPrice * BigInt(donationAmountFC)
-        this.logger.debug(`appreciate speech with ${speechID} ${parsedAmount} ${buyPrice} ${cost}`)
+        this.logger.debug(`appreciate speech ${speechID} ${parsedAmount} ${buyPrice} ${cost}`)
         await this.awaitTransaction(await this.contract.appreciateSpeech(speechID, parsedAmount, buyPrice, {value: cost}))
     }
     public async claimDonations() {
