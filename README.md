@@ -12,7 +12,8 @@ In those contexts we want to explore if decentralized content moderation will be
 I'm aware of the [stupidity of masses](https://www.youtube.com/watch?v=09maaUaRT4M) problem.  
 At the same time this stupidity is often caused by a few corrupt or stupid politicians and media people. 
 This is why voting power is stored in [Freedom Cash](https://freedomcash.org/). 
-So even in phases of temporary mainstream stupidity, people will still invest into Freedom.
+So even in phases of temporary mainstream stupidity, people will still invest into Freedom. Early investors for [Freedom Cash](https://freedomcash.org/) are probably wisely reflected, respectful, freedom loving people.  
+
 
 
 ## Usage Examples

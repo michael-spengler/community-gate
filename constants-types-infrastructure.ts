@@ -1,6 +1,7 @@
 import { ethers, Logger } from "./deps.ts"
 
-export const communityGate = "0xf51Cd1AE2B6d50b4B8dF3EE6E03346122d63a684"
+export const communityGate = "0x1a16475D605AE193b1F58614980c84E62fF1FCa7"
+export const freedomOfSpeech = "0x1865f46A5847b6c466EB3Ed2AABdFd632a56B498"
 export const FE = "0xc79E10bcE57e40e1474fbefF8044C906021A05b1"
 export const FC = "0x1E7A208810366D0562c7Ba93F883daEedBf31410"
 export const baseURLScan = "https://zkevm.polygonscan.com/"

@@ -91,12 +91,15 @@ export class GateKeeperCommunity {
         this.logger.debug(`vote counter: ${await this.getVoteCounter()}`)
         const asset1 = await this.getAsset(1)
         this.logger.debug(`asset 1 ${asset1.assetID} ${asset1.upVoteScore} ${asset1.downVoteScore} ${asset1.reconciliationFrom} ${asset1.reconciled}`)
+        const asset2 = await this.getAsset(2)
+        this.logger.debug(`asset 2 ${asset2.assetID} ${asset2.upVoteScore} ${asset2.downVoteScore} ${asset2.reconciliationFrom} ${asset2.reconciled}`)
         const vote1 = await this.getVote(1)
         const vote2 = await this.getVote(2)
         this.logger.debug(`vote 1 ${vote1.from} ${vote1.amount} ${vote1.up} ${vote1.rewardAmount} ${vote1.claimed} `)
         this.logger.debug(`vote 2 ${vote2.from} ${vote2.amount} ${vote2.up} ${vote2.rewardAmount} ${vote2.claimed} `)
         this.logger.debug(`numberOFWinningVotes: ${await this.contract.getNumberOfWinningVotes(1, true)}`)
         this.logger.debug(`sumOfLosingVotes: ${await this.contract.getSumOfLosingVotes(1, true)}`) 
+        this.logger.debug(`block timestamp: ${await this.contract.getBTS()}`) 
         // this.logger.debug(`claimableRewards: ${await this.contract.getClaimableRewards(FC)}`) 
     }
     private async awaitTransaction(tx: any): Promise<void> {

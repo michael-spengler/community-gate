@@ -42,14 +42,16 @@ contract CommunityGate {
 
   error BuyPriceMightHaveRisen(); 
   error Patience();
+  error ReferenceSeemsUnintended();
   error NothingToClaim();
 
-  function registerAsset(uint256 assetID) public{
+  function registerAsset(uint256 assetID, uint256 votingPeriodMinLength) public{
     assetCounter++;
-    IAsset memory asset = IAsset(assetID, 0, 0, block.timestamp + 3600, false);
+    IAsset memory asset = IAsset(assetID, 0, 0, block.timestamp + votingPeriodMinLength, false);
     assets[assetCounter] = asset;
   }
   function appreciateAsset(uint256 assetID, uint256 appreciationAmountFC, uint256 fCBuyPrice) public payable  {
+		if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
     voteCounter++;
     invest(appreciationAmountFC, fCBuyPrice);
     assets[assetID].upVoteScore += appreciationAmountFC;
@@ -58,6 +60,7 @@ contract CommunityGate {
     voteToAsset[voteCounter] = assetID;
   }
   function depreciateAsset(uint256 assetID, uint256 depreciationAmountFC, uint256 fCBuyPrice) public payable  {
+    if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
     voteCounter++;    
     invest(depreciationAmountFC, fCBuyPrice);
     assets[assetID].downVoteScore += depreciationAmountFC;
@@ -66,6 +69,7 @@ contract CommunityGate {
     voteToAsset[voteCounter] = assetID;
   }
   function reconcile(uint256 assetID) public {
+    if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
     if (block.timestamp < assets[assetID].reconciliationFrom) { revert Patience(); }
     if (assets[assetID].upVoteScore >= assets[assetID].downVoteScore) {
       uint256 sumOfLosingVotes = getSumOfLosingVotes(assetID, true);
@@ -82,7 +86,7 @@ contract CommunityGate {
   function getClaimableRewards(address receiver) public view returns(uint256) {
     uint256 sum;
     for (uint256 i = 1; i <= voteCounter; i++) {
-      if (receiver == votes[i].from) {
+      if (receiver == votes[i].from && !votes[i].claimed) {
         sum += votes[i].rewardAmount;
       }
     }
@@ -91,6 +95,11 @@ contract CommunityGate {
   function claimRewards() public {
     uint256 amount = getClaimableRewards(msg.sender);
     if(amount == 0){ revert NothingToClaim(); }
+    for (uint256 i = 1; i <= voteCounter; i++) {
+      if (msg.sender == votes[i].from) {
+        votes[i].claimed = true;
+      }
+    }    
     IERC20(nativeFreedomCash).transfer(msg.sender, amount);
   }
   function getNumberOfWinningVotes(uint256 assetID, bool up) public view returns (uint256) {
@@ -117,7 +126,7 @@ contract CommunityGate {
     }
     return sum;   
   }
-    function getBTS() public view returns(uint256) {
+  function getBTS() public view returns(uint256) {
     return block.timestamp;
   }
 

@@ -1,0 +1,130 @@
+[
+	{
+		"inputs": [],
+		"name": "NothingToClaimATM",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ReferenceSeemsUnintended",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "speechID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "donationAmountFC",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "fCBuyPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "appreciateSpeech",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "claimDonations",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "freedomCashSmartContract",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "text",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "refersTo",
+				"type": "uint256"
+			}
+		],
+		"name": "speak",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "speechCounter",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "speeches",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "text",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "refersTo",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "donations",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "claimed",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
