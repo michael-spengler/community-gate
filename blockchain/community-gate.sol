@@ -8,6 +8,7 @@
 // https://zkevm.polygonscan.com/token/0xa1e7bB978a28A30B34995c57d5ba0B778E90033B
 
 pragma solidity 0.8.19;
+
 import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v4.9.4/contracts/utils/math/Math.sol";
 import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v4.9.4/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/monique-baumann/freedom-cash/blob/v1.3.0/blockchain/freedom-cash-interface.sol";
@@ -41,35 +42,37 @@ contract CommunityGate {
 
   error BuyPriceMightHaveRisen(); 
   error Patience();
-  error ReferenceSeemsUnintended();
+  error ActionSeemsUnintended();
+  error HashAlreadyRegistered();
   error NothingToClaim();
 
   function registerAsset(bytes32 userGeneratedHash, uint256 votingPeriodMinLength) public {
+    if (hashToAssetID[userGeneratedHash] != 0) { revert HashAlreadyRegistered(); }
     assetCounter++;
     IAsset memory asset = IAsset(0, 0, block.timestamp + votingPeriodMinLength, false);
     assets[assetCounter] = asset;
     hashToAssetID[userGeneratedHash] = assetCounter;
   }
   function appreciateAsset(uint256 assetID, uint256 appreciationAmountFC, uint256 fCBuyPrice) public payable  {
-		if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
+		if(assetID > assetCounter) { revert ActionSeemsUnintended(); }    
     voteCounter++;
-    invest(appreciationAmountFC, fCBuyPrice);
+    IFreedomCash(nativeFreedomCash).buyFreedomCash{value: msg.value}(appreciationAmountFC, fCBuyPrice);
     assets[assetID].upVoteScore += appreciationAmountFC;
     IVote memory vote = IVote(payable(msg.sender), appreciationAmountFC, true, 0, false);
     votes[voteCounter] = vote;
     voteToAsset[voteCounter] = assetID;
   }
   function depreciateAsset(uint256 assetID, uint256 depreciationAmountFC, uint256 fCBuyPrice) public payable  {
-    if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
+    if(assetID > assetCounter) { revert ActionSeemsUnintended(); }    
     voteCounter++;    
-    invest(depreciationAmountFC, fCBuyPrice);
+    IFreedomCash(nativeFreedomCash).buyFreedomCash{value: msg.value}(depreciationAmountFC, fCBuyPrice);
     assets[assetID].downVoteScore += depreciationAmountFC;
     IVote memory vote = IVote(payable(msg.sender), depreciationAmountFC, false, 0, false);
     votes[voteCounter] = vote;
     voteToAsset[voteCounter] = assetID;
   }
   function reconcile(uint256 assetID) public {
-    if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
+    if(assetID > assetCounter || assets[assetID].reconciled) { revert ActionSeemsUnintended(); }    
     if (block.timestamp < assets[assetID].reconciliationFrom) { revert Patience(); }
     if (assets[assetID].upVoteScore >= assets[assetID].downVoteScore) {
       uint256 sumOfLosingVotes = getSumOfLosingVotes(assetID, true);
@@ -82,6 +85,7 @@ contract CommunityGate {
       uint256 rewardPerWinner = sumOfLosingVotes / numberOfWinningVotes;      
       assignRewards(false, rewardPerWinner);
     }
+    assets[assetID].reconciled = true;
   }
   function getClaimableRewards(address receiver) public view returns(uint256) {
     uint256 sum;
@@ -136,10 +140,5 @@ contract CommunityGate {
         votes[i].rewardAmount = rewardPerWinner;
       } 
     }
-  }
-  function invest(uint256 amount, uint256 fCBuyPrice) internal {
-    uint256 fCBuyPriceCheck = IFreedomCash(nativeFreedomCash).getBuyPrice(10**18);
-    if (fCBuyPriceCheck != fCBuyPrice) { revert BuyPriceMightHaveRisen(); }
-    IFreedomCash(nativeFreedomCash).buyFreedomCash{value: msg.value}(amount, fCBuyPrice);
   }
 }

@@ -1,6 +1,11 @@
 [
 	{
 		"inputs": [],
+		"name": "ActionSeemsUnintended",
+		"type": "error"
+	},
+	{
+		"inputs": [],
 		"name": "BuyPriceMightHaveRisen",
 		"type": "error"
 	},
@@ -17,11 +22,6 @@
 	{
 		"inputs": [],
 		"name": "Patience",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "ReferenceSeemsUnintended",
 		"type": "error"
 	},
 	{

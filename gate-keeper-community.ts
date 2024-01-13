@@ -56,6 +56,9 @@ export class GateKeeperCommunity {
     public async getClaimableRewards(receiver: string) {
         return this.contract.getClaimableRewards(receiver)
     }
+    public async getAssetIDFromUserGeneratedHash(hash: string) {
+        return this.contract.hashToAssetID(hash)
+    }
     public async getAssetFromUserGeneratedHash(hash: string) {
         this.logger.info(`reading asset from user generated hash ${hash}`)
         const raw = await this.contract.getAsset(hash)
