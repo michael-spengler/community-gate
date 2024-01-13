@@ -8,7 +8,6 @@
 // https://zkevm.polygonscan.com/token/0xa1e7bB978a28A30B34995c57d5ba0B778E90033B
 
 pragma solidity 0.8.19;
-
 import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v4.9.4/contracts/utils/math/Math.sol";
 import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v4.9.4/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/monique-baumann/freedom-cash/blob/v1.3.0/blockchain/freedom-cash-interface.sol";
@@ -38,16 +37,18 @@ contract CommunityGate {
     bool claimed;
   }
   mapping(uint256 => uint256) public voteToAsset;
+  mapping(bytes32 => uint256) public hashToAssetID;
 
   error BuyPriceMightHaveRisen(); 
   error Patience();
   error ReferenceSeemsUnintended();
   error NothingToClaim();
 
-  function registerAsset(uint256 votingPeriodMinLength) public{
+  function registerAsset(bytes32 userGeneratedHash, uint256 votingPeriodMinLength) public {
     assetCounter++;
     IAsset memory asset = IAsset(0, 0, block.timestamp + votingPeriodMinLength, false);
     assets[assetCounter] = asset;
+    hashToAssetID[userGeneratedHash] = assetCounter;
   }
   function appreciateAsset(uint256 assetID, uint256 appreciationAmountFC, uint256 fCBuyPrice) public payable  {
 		if(assetID > assetCounter) { revert ReferenceSeemsUnintended(); }    
@@ -125,10 +126,9 @@ contract CommunityGate {
     }
     return sum;   
   }
-  function getBTS() public view returns(uint256) {
-    return block.timestamp;
+  function getAsset(bytes32 hash) public view returns(IAsset memory) {
+    return assets[hashToAssetID[hash]];
   }
-
   function assignRewards(bool toUpvoters, uint256 rewardPerWinner) internal {
     for (uint256 i = 1; i <= voteCounter; i++) {
       rewardCounter++;
@@ -137,7 +137,6 @@ contract CommunityGate {
       } 
     }
   }
-
   function invest(uint256 amount, uint256 fCBuyPrice) internal {
     uint256 fCBuyPriceCheck = IFreedomCash(nativeFreedomCash).getBuyPrice(10**18);
     if (fCBuyPriceCheck != fCBuyPrice) { revert BuyPriceMightHaveRisen(); }

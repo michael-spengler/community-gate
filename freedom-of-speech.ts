@@ -1,39 +1,48 @@
-import { freedomOfSpeech, baseURLScan, FC, FE, getContract, getLogger, getProvider } from "./constants-types-infrastructure.ts"
-import { ethers, Logger } from "./deps.ts"
+import { baseURLScan, communityGate, FC, freedomOfSpeech, getContract, getLogger, getProvider } from "./constants-types-infrastructure.ts"
+import { ethers, hashJs, Logger } from "./deps.ts"
+
 
 export class FreedomOfSpeech {
 
     private static instance
-    public static async getInstance() {
+    public static async getInstance(cGVPLength: number) {
         if (FreedomOfSpeech.instance === undefined) {
             const logger = await getLogger()
             const provider = getProvider(logger)
             const contract = await getContract(freedomOfSpeech, provider, './blockchain/freedom-of-speech-abi.json')
             const fCcontract = await getContract(FC, provider, './blockchain/freedom-cash-abi.json')
-            return new FreedomOfSpeech(logger, contract, fCcontract, provider)
+            const cGcontract = await getContract(communityGate, provider, './blockchain/community-gate-abi.json')
+            return new FreedomOfSpeech(logger, contract, fCcontract, cGcontract, provider, cGVPLength)
         }
     }
 
     protected logger: Logger
     protected provider: any
-    protected contract
-    protected fCcontract
+    protected contract: any
+    protected fCcontract: any
+    protected cGcontract: any
+    protected cGVPLength: number
 
-    protected constructor(logger: Logger, contract: any, fCcontract: any, provider: any) {
+    protected constructor(logger: Logger, contract: any, fCcontract: any, cGcontract: any, provider: any, cGVPLength: number) {
         this.logger = logger
         this.provider = provider
         this.contract = contract
         this.fCcontract = fCcontract
+        this.cGcontract = cGcontract
+        this.cGVPLength = cGVPLength
     }
-    public async speak(text: number, refersTo: number) {
+    public async speak(text: number, refersTo: number): Promise<void> {
         await this.awaitTransaction(await this.contract.speak(text, refersTo))
+        const hash = "0x" + hashJs.sha256().update(text).digest('hex')
+        this.logger.debug(hash)
+        await this.awaitTransaction(await this.cGcontract.registerAsset(hash, this.cGVPLength))
     }
     public async appreciateSpeech(speechID: number, donationAmountFC: number) {
         const parsedAmount = ethers.parseEther(donationAmountFC.toString())
         const buyPrice = await this.fCcontract.getBuyPrice(BigInt(10 ** 18))
         const cost = buyPrice * BigInt(donationAmountFC)
         this.logger.debug(`appreciate speech ${speechID} ${parsedAmount} ${buyPrice} ${cost}`)
-        await this.awaitTransaction(await this.contract.appreciateSpeech(speechID, parsedAmount, buyPrice, {value: cost}))
+        await this.awaitTransaction(await this.contract.appreciateSpeech(speechID, parsedAmount, buyPrice, { value: cost }))
     }
     public async claimDonations() {
         await this.awaitTransaction(await this.contract.claimDonations())

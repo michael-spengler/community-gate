@@ -56,6 +56,18 @@ export class GateKeeperCommunity {
     public async getClaimableRewards(receiver: string) {
         return this.contract.getClaimableRewards(receiver)
     }
+    public async getAssetFromUserGeneratedHash(hash: string) {
+        this.logger.info(`reading asset from user generated hash ${hash}`)
+        const raw = await this.contract.getAsset(hash)
+
+        return {
+            upVoteScore: raw[0],
+            downVoteScore: raw[1],
+            reconciliationFrom: raw[2],
+            reconciled: raw[3]
+        }
+    }
+
     public async getAsset(id: number) {
         this.logger.info(`reading asset ${id}`)
         const raw = await this.contract.assets(id)
@@ -98,7 +110,6 @@ export class GateKeeperCommunity {
         this.logger.debug(`vote 2 ${vote2.from} ${vote2.amount} ${vote2.up} ${vote2.rewardAmount} ${vote2.claimed} `)
         this.logger.debug(`numberOFWinningVotes: ${await this.contract.getNumberOfWinningVotes(1, true)}`)
         this.logger.debug(`sumOfLosingVotes: ${await this.contract.getSumOfLosingVotes(1, true)}`) 
-        this.logger.debug(`block timestamp: ${await this.contract.getBTS()}`) 
         this.logger.debug(`claimableRewards: ${await this.contract.getClaimableRewards("0xB257CCE82d58Ed21c70B4B0cac6a6089408E5dbE")}`) 
     }
     private async awaitTransaction(tx: any): Promise<void> {

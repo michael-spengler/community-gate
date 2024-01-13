@@ -6,6 +6,11 @@
 	},
 	{
 		"inputs": [],
+		"name": "HashAlreadyRegistered",
+		"type": "error"
+	},
+	{
+		"inputs": [],
 		"name": "NothingToClaim",
 		"type": "error"
 	},
@@ -120,13 +125,41 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "getBTS",
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			}
+		],
+		"name": "getAsset",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "upVoteScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "downVoteScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "reconciliationFrom",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "reconciled",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct CommunityGate.IAsset",
 				"name": "",
-				"type": "uint256"
+				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",
@@ -200,6 +233,25 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "hashToAssetID",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "nativeFreedomCash",
 		"outputs": [
@@ -240,6 +292,11 @@
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "userGeneratedHash",
+				"type": "bytes32"
+			},
 			{
 				"internalType": "uint256",
 				"name": "votingPeriodMinLength",

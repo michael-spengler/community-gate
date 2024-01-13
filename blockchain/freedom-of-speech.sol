@@ -5,7 +5,7 @@ import "https://github.com/monique-baumann/freedom-cash/blob/v1.3.0/blockchain/f
 
 contract FreedomOfSpeech {
 
-    uint256 public speechCounter = 0;
+    uint256 public speechCounter;
     mapping(uint256 => ISpeech) public speeches;
     struct ISpeech {
         address from;
